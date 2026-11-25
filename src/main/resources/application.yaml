@@ -1,3 +1,7 @@
+
+server:
+  port: 8090
+
 spring:
   application:
     name: matching-trading-system-server
@@ -15,3 +19,14 @@ mybatis:
 mybatis-plus:
   configuration:
     jdbc-type-for-null: 'null'
+
+#缓存过期时间(时间都是秒)
+cache-expire:
+  captcha: 100  #验证码更新时间
+  account: 3600 #账号有效时间
+  order: 36000 #委托数据有效期
+
+#机器位置（为后面生成全局唯一数做做准备）
+counter:
+  dataCenterId: 0 #机房ID
+  workerId: 0 #机柜ID
