@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: matching-trading-system-server
+  datasource:
+    url:  jdbc:sqlite:/Users/zhangjiaqi/develop/data/sqlite-data/utmc_store.sqlite
+    driver-class-name: org.sqlite.JDBC
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 6000ms
+
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+mybatis-plus:
+  configuration:
+    jdbc-type-for-null: 'null'
