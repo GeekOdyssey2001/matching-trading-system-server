@@ -4,9 +4,13 @@ import com.jackie.matchingtradingsystemserver.Response.BusiResultResponse;
 import com.jackie.matchingtradingsystemserver.Response.CaptchaResponse;
 import com.jackie.matchingtradingsystemserver.cache.BusiCacheType;
 import com.jackie.matchingtradingsystemserver.cache.RedisStringCache;
+import com.jackie.matchingtradingsystemserver.model.Account;
+import com.jackie.matchingtradingsystemserver.service.AccountService;
 import com.jackie.matchingtradingsystemserver.util.Captcha;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import thirdpart.uuid.GudyUuid;
 
@@ -14,6 +18,9 @@ import thirdpart.uuid.GudyUuid;
 @RequestMapping("/login")
 @Log4j2
 public class LoginController {
+
+    @Autowired
+    private AccountService accountService;
 
     @RequestMapping("/captcha")
     public BusiResultResponse captcha() throws Exception{
@@ -33,13 +40,24 @@ public class LoginController {
         CaptchaResponse response = new CaptchaResponse(uuid,captcha.getBase64ByteStr());
         return new BusiResultResponse(response);
 
-
-
     }
 
     @RequestMapping("/userLogin")
-    public BusiResultResponse login() throws Exception{
-        return null;
+    public BusiResultResponse login(@RequestParam long uid,
+                                    @RequestParam String password,
+                                    @RequestParam String captcha,
+                                    @RequestParam String captchaId) throws Exception{
+        Account account = accountService.login(uid,password,captcha,captchaId);
+        if(account == null){
+            return new BusiResultResponse(BusiResultResponse.FAIL,"用户名密码或者验证码错误",null); //FAIL:代码里不能写数字1，2，要写能易于识别的·内容
+        }else{
+            return new BusiResultResponse(account);
+        }
+    }
+
+    @RequestMapping("/loginfail")
+    public BusiResultResponse loginFail(){
+        return new BusiResultResponse(BusiResultResponse.RELOGIN,"请重新登录",null);
     }
 
 }

@@ -56,6 +56,16 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public boolean accountExistInCache(String token) {
-        return false;
+        if(StringUtils.isBlank(token)){
+            return false;
+        }
+        //从缓存获取数据
+        String accountCache = RedisStringCache.get(token,BusiCacheType.ACCOUNT);
+        if(accountCache !=null){
+            RedisStringCache.cache(token,accountCache,BusiCacheType.ACCOUNT);
+            return true;
+        }else{
+            return false;
+        }
     }
 }

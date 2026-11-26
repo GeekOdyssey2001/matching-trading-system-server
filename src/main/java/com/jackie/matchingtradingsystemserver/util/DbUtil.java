@@ -53,7 +53,7 @@ public class DbUtil {
 
         return dbUtil.getSqlSessionTemplate().selectOne(
                 "userMapper.queryAccount",
-                ImmutableMap.of("Uid",uid,"Password",password)
+                ImmutableMap.of("UId",uid,"Password",password)
         );
     }
 
@@ -61,8 +61,8 @@ public class DbUtil {
                 dbUtil.getSqlSessionTemplate().update(
           "userMapper.updateAccountLoginTime",
                 ImmutableMap.of(
-                    "Uid",uid,
-                    "Modify",nowDate,
+                    "UId",uid,
+                    "ModifyDate",nowDate,
                     "ModifyTime",nowTime
             ));
     }
