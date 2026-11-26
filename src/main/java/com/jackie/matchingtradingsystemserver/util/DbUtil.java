@@ -1,5 +1,7 @@
 package com.jackie.matchingtradingsystemserver.util;
 
+import com.google.common.collect.ImmutableMap;
+import com.jackie.matchingtradingsystemserver.model.Account;
 import jakarta.annotation.PostConstruct;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +47,28 @@ public class DbUtil {
             return res;
         }
     }
+
+    ////////////////////////身份认证////////////////////////
+    public static Account queryAccount(long uid, String password){
+
+        return dbUtil.getSqlSessionTemplate().selectOne(
+                "userMapper.queryAccount",
+                ImmutableMap.of("Uid",uid,"Password",password)
+        );
+    }
+
+    public static void updateLoginTime(Long uid,String nowDate,String nowTime){
+                dbUtil.getSqlSessionTemplate().update(
+          "userMapper.updateAccountLoginTime",
+                ImmutableMap.of(
+                    "Uid",uid,
+                    "Modify",nowDate,
+                    "ModifyTime",nowTime
+            ));
+    }
+
+
+
+
+
 }
