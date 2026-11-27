@@ -12,6 +12,8 @@ public interface AccountService {
 
     boolean logout(String token);
 
+    boolean updatePwd(long uid, String oldPwd, String newPwd);
+
 
 
 }

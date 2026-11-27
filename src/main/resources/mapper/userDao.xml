@@ -25,4 +25,14 @@
         where uid = #{UId}
     </update>
 
+    <update id="updatePwd" parameterType="hashmap">
+        update t_user set
+        password = #{Newpwd}
+        where uid = #{UId} and password = #{OldPwd}
+    </update>
+
+
+
+
+
 </mapper>

@@ -66,4 +66,17 @@ public class LoginController {
         return new BusiResultResponse(BusiResultResponse.SUCCESS,"退出成功",null);
     }
 
+    @RequestMapping("/pwdUpdate")
+    public BusiResultResponse updatePwd(@RequestParam int uid,
+                                        @RequestParam String oldPwd,
+                                        @RequestParam String newPwd){
+        boolean result = accountService.updatePwd(uid,oldPwd,newPwd);
+        if(result){
+            return new BusiResultResponse(BusiResultResponse.SUCCESS,"修改密码成功",null);
+        }else {
+            return new BusiResultResponse(BusiResultResponse.FAIL,"修改密码失败",null);
+        }
+
+    }
+
 }
