@@ -35,11 +35,13 @@ public class AccountServiceImpl implements AccountService{
             //3.数据库用户名和密码校验
             Account account = DbUtil.queryAccount(uid,password);
             if(account == null){
+                return null;
+            }else{
                 //1.唯一表示标识作为身份标志
                 account.setToken(String.valueOf(GudyUuid.getInstance().getUUID()));
                 //2.存入缓存
                 RedisStringCache.cache(String.valueOf(
-                        account.getToken()),
+                                account.getToken()),
                         JsonUtil.toJson(account),
                         BusiCacheType.ACCOUNT);
                 //3.更新登录时间
@@ -47,7 +49,7 @@ public class AccountServiceImpl implements AccountService{
                 DbUtil.updateLoginTime(uid,
                         TimeformatUtil.yyyyMMdd(date),
                         TimeformatUtil.hhMMss(date)
-                        );
+                );
                 account.setLastLoginTime(TimeformatUtil.yyyyMMdd(date));
                 account.setLastLoginDate(TimeformatUtil.hhMMss(date));
             }

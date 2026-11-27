@@ -10,6 +10,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Component
 public class SessionCheckFilter implements Filter {
 
+    @Autowired
     private AccountService accountService;
 
     private Set<String> whiteRootPaths = Sets.newHashSet(
@@ -47,7 +49,8 @@ public class SessionCheckFilter implements Filter {
         }else{
             if(!whiteRootPaths.contains(split[1])){
                 //不在白名单，验证token是否合法
-                if(accountService.accountExistInCache( httpRequest.getParameter("token"))){
+                if(accountService.accountExistInCache(
+                        httpRequest.getParameter("token"))){
                     chain.doFilter(request,response); //放行请求
                 }else{
                     httpRequest.getRequestDispatcher("/login/loginfail").forward(request,response);

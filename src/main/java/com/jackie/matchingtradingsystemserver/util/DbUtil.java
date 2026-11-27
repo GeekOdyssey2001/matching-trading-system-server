@@ -1,11 +1,22 @@
 package com.jackie.matchingtradingsystemserver.util;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.jackie.matchingtradingsystemserver.cache.BusiCacheType;
+import com.jackie.matchingtradingsystemserver.cache.RedisStringCache;
 import com.jackie.matchingtradingsystemserver.model.Account;
+import com.jackie.matchingtradingsystemserver.model.OrderInfo;
+import com.jackie.matchingtradingsystemserver.model.PosiInfo;
+import com.jackie.matchingtradingsystemserver.model.TradeInfo;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 和数据所有的交互都由这个工具类提供
@@ -76,6 +87,83 @@ public class DbUtil {
                                 "Newpwd",newPwd,
                                 "OldPwd",oldPwd
                         ));
+    }
+
+    ////////////////////////资金类////////////////////////
+    public static long getBalance(long uid){
+        Long result = dbUtil.getSqlSessionTemplate()
+                .selectOne("orderMapper.queryBalance",
+                        ImmutableMap.of("UId",uid));
+        if(result == null){
+            return -1;
+        }else {
+            return result;
+        }
+    }
+
+    /**
+     * 持仓类、委托类和成交类QPS高，需要把数据缓存到redis
+     *
+     */
+
+    ////////////////////////持仓类////////////////////////
+    public static List<PosiInfo> getPosiList(long uid){
+        //查缓存
+        String suid = Long.toString(uid);
+        String posiStr = RedisStringCache.get(suid, BusiCacheType.POSI);
+        if(StringUtils.isEmpty(posiStr)){
+            //
+            List<PosiInfo> tmp = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryPosi",
+                    ImmutableMap.of("UId",uid));
+            List<PosiInfo> result = CollectionUtils.isEmpty(tmp) ? Lists.newArrayList() : tmp;
+            //更新缓存
+            RedisStringCache.cache(suid,JsonUtil.toJson(result),BusiCacheType.POSI);
+            return result;
+        }else{
+            //查到，命中缓存
+            return JsonUtil.fromJsonArr(posiStr,PosiInfo.class);
+        }
+    }
+
+    ////////////////////////委托类////////////////////////
+    public static List<OrderInfo> getOrderList(long uid){
+        //查缓存
+        String suid = Long.toString(uid);
+        String OrderStr = RedisStringCache.get(suid, BusiCacheType.ORDER);
+        if(StringUtils.isEmpty(OrderStr)){
+            //
+            List<OrderInfo> tmp = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryOrder",
+                    ImmutableMap.of("UId",uid));
+            List<OrderInfo> result = CollectionUtils.isEmpty(tmp) ? Lists.newArrayList() : tmp;
+            //更新缓存
+            RedisStringCache.cache(suid,JsonUtil.toJson(result),BusiCacheType.ORDER);
+            return result;
+        }else{
+            //查到，命中缓存
+            return JsonUtil.fromJsonArr(OrderStr,OrderInfo.class);
+        }
+    }
+
+    ////////////////////////成交类////////////////////////
+    public static List<TradeInfo> getTradeList(long uid){
+        //查缓存
+        String suid = Long.toString(uid);
+        String tradeStr = RedisStringCache.get(suid, BusiCacheType.TRADE);
+        if(StringUtils.isEmpty(tradeStr)){
+            //
+            List<TradeInfo> tmp = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryTrade",
+                    ImmutableMap.of("UId",uid));
+            List<TradeInfo> result = CollectionUtils.isEmpty(tmp) ? Lists.newArrayList() : tmp;
+            //更新缓存
+            RedisStringCache.cache(suid,JsonUtil.toJson(result),BusiCacheType.TRADE);
+            return result;
+        }else{
+            //查到，命中缓存
+            return JsonUtil.fromJsonArr(tradeStr,TradeInfo.class);
+        }
     }
 
 }
