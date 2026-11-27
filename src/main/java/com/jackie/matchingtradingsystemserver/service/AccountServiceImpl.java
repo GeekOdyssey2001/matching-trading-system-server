@@ -68,4 +68,10 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
     }
+
+    @Override
+    public boolean logout(String token) {
+        RedisStringCache.remove(token,BusiCacheType.ACCOUNT);
+        return true;
+    }
 }

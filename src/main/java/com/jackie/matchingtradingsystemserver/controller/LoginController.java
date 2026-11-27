@@ -60,4 +60,10 @@ public class LoginController {
         return new BusiResultResponse(BusiResultResponse.RELOGIN,"请重新登录",null);
     }
 
+    @RequestMapping("/logout")
+    public BusiResultResponse logout(@RequestParam String token){
+        accountService.logout(token);
+        return new BusiResultResponse(BusiResultResponse.SUCCESS,"退出成功",null);
+    }
+
 }

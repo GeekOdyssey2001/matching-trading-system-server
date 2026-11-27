@@ -10,6 +10,8 @@ public interface AccountService {
     //缓存中是否存在已经登录信息
     boolean accountExistInCache(String token);
 
+    boolean logout(String token);
+
 
 
 }
